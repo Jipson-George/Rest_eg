@@ -5,6 +5,7 @@ from flask_restful import Api
 from flask_cors import CORS
 from flask_migrate import Migrate, upgrade
 from models import db  # Assuming models.py defines 'db' as SQLAlchemy()
+from resources.country import CountryResource
 
 def create_app():
     # Create the Flask app instance
@@ -23,6 +24,7 @@ def create_app():
     migrate = Migrate(app, db)
 
     # Initialize API and CORS
+
     api = Api(app)
     CORS(app)
     
@@ -34,7 +36,7 @@ def create_app():
     @app.route("/")
     def hello():
         return "Hello, World!"
-    
+    api.add_resource(CountryResource, "/countries",)
     # Return the app instance
     return app
 
