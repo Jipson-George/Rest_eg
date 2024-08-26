@@ -8,7 +8,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:password@localhost/my
 db.init_app(app)
 
 class DoctorResource(Resource):
-    def __init__(self):
+    def __init__(self): 
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('last_name', type=str, required=True, help='Last name is required')
         self.reqparse.add_argument('first_name', type=str, required=True, help='First name is required')

@@ -36,7 +36,7 @@ def create_app():
     @app.route("/")
     def hello():
         return "Hello, World!"
-    api.add_resource(CountryResource, "/countries",)
+    api.add_resource(CountryResource, "/countries", "/countries/<string:countryId>")
     # Return the app instance
     return app
 

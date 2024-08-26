@@ -18,20 +18,40 @@ parser.add_argument('currencySymbol', type=str, required=True, help="Currency sy
 parser.add_argument('minimumAge', type=int, required=False)
 
 class CountryResource(Resource):
-    def get(self):
-        countries = Country.query.all()
-        country_list = [{
-            "id": country.id,
-            "name": country.name,
-            "iso": country.iso,
-            "isd": country.isd,
-            "languageCode": country.languageCode,
-            "language": country.language,
-            "currencyCode": country.currencyCode,
-            "currencySymbol": country.currencySymbol,
-            "minimumAge": country.minimumAge
-        } for country in countries]
-        return jsonify({"countries": country_list})        
+    def get(self, countryId=None):
+        if countryId is not None:
+            # Retrieve a single country by ID
+            country = models.db.session.query(models.Country).filter_by(id=countryId).first()
+            if country:
+                country_data = {
+                    "id": country.id,
+                    "name": country.name,
+                    "iso": country.iso,
+                    "isd": country.isd,
+                    "languageCode": country.languageCode,
+                    "language": country.language,
+                    "currencyCode": country.currencyCode,
+                    "currencySymbol": country.currencySymbol,
+                    "minimumAge": country.minimumAge
+                }
+                return jsonify({"country": country_data})
+            else:
+                return jsonify({"message": "Country not found"}), 404
+        else:
+            # Retrieve all countries
+            countries = models.db.session.query(models.Country).all()
+            country_list = [{
+                "id": country.id,
+                "name": country.name,
+                "iso": country.iso,
+                "isd": country.isd,
+                "languageCode": country.languageCode,
+                "language": country.language,
+                "currencyCode": country.currencyCode,
+                "currencySymbol": country.currencySymbol,
+                "minimumAge": country.minimumAge
+            } for country in countries]
+            return jsonify({"countries": country_list})
     def post(self):
         args = parser.parse_args()
         country = Country(
@@ -47,6 +67,43 @@ class CountryResource(Resource):
         models.db.session.add(country)
         models.db.session.commit()
         return jsonify({"message": "Country added successfully", "country": {
+            "id": country.id,
+            "name": country.name,
+            "iso": country.iso,
+            "isd": country.isd,
+            "languageCode": country.languageCode,
+            "language": country.language,
+            "currencyCode": country.currencyCode,
+            "currencySymbol": country.currencySymbol,
+            "minimumAge": country.minimumAge
+        }})
+    def put(self, countryId):
+        args = parser.parse_args()
+        country = models.db.session.query(models.Country).filter_by(id=countryId).first()
+        if not country:
+            return jsonify({"message": "Country not found"}), 404
+
+        # Update fields if they are provided in the request
+        if args['name'] is not None:
+            country.name = args['name']
+        if args['iso'] is not None:
+            country.iso = args['iso']
+        if args['isd'] is not None:
+            country.isd = args['isd']
+        if args['languageCode'] is not None:
+            country.languageCode = args['languageCode']
+        if args['language'] is not None:
+            country.language = args['language']
+        if args['currencyCode'] is not None:
+            country.currencyCode = args['currencyCode']
+        if args['currencySymbol'] is not None:
+            country.currencySymbol = args['currencySymbol']
+        if args['minimumAge'] is not None:
+            country.minimumAge = args['minimumAge']
+
+        models.db.session.commit()
+
+        return jsonify({"message": "Country updated successfully", "country": {
             "id": country.id,
             "name": country.name,
             "iso": country.iso,
